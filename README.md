@@ -8,7 +8,7 @@ AI、miniPC、自動化を実際に試した記録を公開する技術ブログ
 - TypeScript
 - MDX
 - React components
-- Cloudflare Workers Static Assets（予定）
+- Cloudflare Workers Static Assets
 
 ## Development
 
