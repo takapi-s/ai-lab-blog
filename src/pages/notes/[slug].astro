@@ -1,0 +1,67 @@
+---
+import { getCollection, render } from "astro:content";
+import "../../styles/global.css";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes", ({ data }) => !data.draft);
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={note.data.description} />
+    <title>{note.data.title} — Field Notes</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Field Notes home">
+          <span class="brand-mark">FN</span>
+          <span>FIELD NOTES</span>
+        </a>
+        <nav class="nav" aria-label="メインナビゲーション">
+          <a href="/#notes">Notes</a>
+          <a href="/#about">About</a>
+        </nav>
+      </header>
+
+      <main class="article-shell">
+        <a class="back-link" href="/">← Back to notes</a>
+        <div class="article-meta">
+          <span>{note.data.category}</span>
+          <time datetime={note.data.pubDate.toISOString()}>{note.data.pubDate.toLocaleDateString("ja-JP")}</time>
+        </div>
+        <h1>{note.data.title}</h1>
+        <p class="article-lead">{note.data.description}</p>
+        <article class="article-content">
+          <Content />
+        </article>
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  .article-shell { max-width: 760px; margin: 0 auto; padding: 76px 0; }
+  .back-link { color: var(--muted); font-size: 14px; }
+  .back-link:hover { color: var(--accent); }
+  .article-meta { display: flex; gap: 16px; margin-top: 64px; color: var(--accent); font-size: 12px; letter-spacing: .08em; }
+  .article-meta time { color: var(--muted); }
+  .article-shell h1 { max-width: none; margin: 18px 0; font-size: clamp(38px, 6vw, 64px); }
+  .article-lead { color: var(--muted); font-size: 18px; line-height: 1.8; }
+  .article-content { margin-top: 54px; color: #d7dee7; font-size: 17px; line-height: 1.9; }
+  .article-content :global(h2) { margin: 48px 0 14px; color: var(--text); font-size: 28px; }
+  .article-content :global(p) { margin: 18px 0; }
+  .article-content :global(li) { margin: 8px 0; }
+  .article-content :global(pre) { overflow-x: auto; margin: 24px 0; padding: 20px; background: #080c11; border: 1px solid var(--line); border-radius: 12px; font-size: 14px; line-height: 1.6; }
+  .article-content :global(code) { font-family: "SFMono-Regular", Consolas, monospace; }
+</style>

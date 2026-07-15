@@ -1,0 +1,102 @@
+---
+import "../styles/global.css";
+
+const topics = [
+  {
+    label: "AI / AGENTS",
+    title: "AIと暮らす技術を、実際に試す",
+    text: "Hermes、Slack、Gmail、Graphiti。日々の作業を小さく自動化していく記録。"
+  },
+  {
+    label: "HARDWARE",
+    title: "miniPCを仕事の相棒にする",
+    text: "買ったもの、動かしたもの、失敗したもの。再現できる設定と数字を残す。"
+  },
+  {
+    label: "BUILD LOG",
+    title: "コードは動くところまで書く",
+    text: "GitHubの紹介だけでなく、実装・検証・判断の過程をオープンにする。"
+  }
+];
+
+const notes = [
+  { date: "2026.07.15", title: "このサイトをAstroとCloudflare Workersで始める", tag: "BUILD LOG", href: "/notes/starting-this-site/" },
+  { date: "COMING SOON", title: "miniPCにAIエージェントを常駐させる構成", tag: "AI / AGENTS", href: "#" },
+  { date: "COMING SOON", title: "実際に使って分かった道具のレビュー", tag: "HARDWARE", href: "#" }
+];
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="AI、miniPC、自動化を実際に試した記録。" />
+    <title>Field Notes — AIと暮らす技術</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Field Notes home">
+          <span class="brand-mark">FN</span>
+          <span>FIELD NOTES</span>
+        </a>
+        <nav class="nav" aria-label="メインナビゲーション">
+          <a href="#notes">Notes</a>
+          <a href="#about">About</a>
+          <a href="https://github.com/" rel="noreferrer">GitHub ↗</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" id="about">
+          <div>
+            <div class="eyebrow">AI · Hardware · Building in public</div>
+            <h1>試して、作って、<br />記録する。</h1>
+            <p class="lead">AIとminiPCを使って、日常の仕事を少しずつ変えていく。その実装と失敗と、買ってよかったものを記録するフィールドノート。</p>
+          </div>
+          <aside class="hero-note">
+            <strong>このサイトについて</strong>
+            完成されたチュートリアルではなく、実際に動かした結果を残します。うまくいかなかった設定も、判断材料として公開します。
+          </aside>
+        </section>
+
+        <section aria-labelledby="topics-title">
+          <div class="section-heading">
+            <h2 id="topics-title">Explore the field</h2>
+            <span>現在のテーマ</span>
+          </div>
+          <div class="cards">
+            {topics.map((topic) => (
+              <a class="card" href="#notes">
+                <div class="card-label">{topic.label}</div>
+                <h3>{topic.title}</h3>
+                <p>{topic.text}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section class="notes" id="notes" aria-labelledby="notes-title">
+          <div class="section-heading">
+            <h2 id="notes-title">Latest notes</h2>
+            <span>週1回の更新を目指す</span>
+          </div>
+          <div class="note-list">
+            {notes.map((note) => (
+              <a class="note" href={note.href} aria-disabled={note.href === "#" ? "true" : undefined}>
+                <time>{note.date}</time>
+                <span class="note-title">{note.title}</span>
+                <small>{note.tag}</small>
+              </a>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>© 2026 Field Notes</span>
+        <span>Built with Astro · deployed on Cloudflare</span>
+      </footer>
+    </div>
+  </body>
+</html>
