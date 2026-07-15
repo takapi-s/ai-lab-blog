@@ -7,6 +7,12 @@ tags:
   - Astro
   - Cloudflare Workers
   - AI Agent
+status: "検証済み"
+stack:
+  - Astro 7
+  - MDX
+  - Cloudflare Workers Static Assets
+  - GitHub Pull Request
 draft: false
 ---
 

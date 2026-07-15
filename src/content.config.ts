@@ -10,6 +10,8 @@ const notes = defineCollection({
     category: z.enum(["AI / AGENTS", "HARDWARE", "BUILD LOG"]),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    status: z.enum(["実装中", "検証済み", "運用中"]).default("実装中"),
+    stack: z.array(z.string()).default([]),
   }),
 });
 
