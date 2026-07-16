@@ -7,16 +7,19 @@ user: User {
   style.fill: "#151c25"
   style.stroke: "#f2c078"
   style.font-color: "#edf2f7"
+  style.font-size: 24
 }
 
 miniPC: Local miniPC {
   style.fill: "#111c1b"
   style.stroke: "#45c99b"
   style.font-color: "#edf2f7"
+  style.font-size: 24
   hermes: Hermes Agent {
     style.fill: "#17342f"
     style.stroke: "#85e0c0"
     style.font-color: "#edf2f7"
+    style.font-size: 24
     runtime: "local automation"
     role: "drafts + PR support"
   }
@@ -26,6 +29,7 @@ github: GitHub {
   style.fill: "#171525"
   style.stroke: "#c4a7ff"
   style.font-color: "#edf2f7"
+  style.font-size: 24
   repo: Repository {
     style.fill: "#211c32"
     style.stroke: "#c4a7ff"
@@ -45,6 +49,7 @@ build: Astro 7 {
   style.fill: "#15332d"
   style.stroke: "#85e0c0"
   style.font-color: "#edf2f7"
+  style.font-size: 24
   typescript: TypeScript
   content: "MDX + React components"
 }
@@ -53,6 +58,7 @@ preview: PR Preview {
   style.fill: "#35242b"
   style.stroke: "#f29aaa"
   style.font-color: "#edf2f7"
+  style.font-size: 24
   build: Astro build
   deploy: Wrangler
   target: "Cloudflare Workers Static Assets"
@@ -63,6 +69,7 @@ production: Main Production {
   style.fill: "#352c20"
   style.stroke: "#f2c078"
   style.font-color: "#edf2f7"
+  style.font-size: 24
   build: Astro build
   deploy: Wrangler
   target: "Cloudflare Workers Static Assets"
@@ -73,6 +80,7 @@ browser: End User Browser {
   style.fill: "#152936"
   style.stroke: "#7dd3fc"
   style.font-color: "#edf2f7"
+  style.font-size: 24
 }
 
 user -> miniPC.hermes: "writing instruction"
