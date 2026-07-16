@@ -26,8 +26,16 @@ a { color: inherit; text-decoration: none; }
 .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .18em; font-size: 11px; font-weight: 700; }
 h1 { max-width: 720px; margin: 16px 0 20px; font-size: clamp(42px, 7vw, 78px); line-height: .98; letter-spacing: -.06em; }
 .lead { max-width: 600px; color: var(--muted); font-size: 18px; line-height: 1.8; }
+.hero-aside { display: grid; gap: 14px; }
 .hero-note { padding: 22px; background: rgba(21, 28, 37, .75); border: 1px solid var(--line); border-radius: 16px; color: var(--muted); line-height: 1.7; }
 .hero-note strong { display: block; color: var(--warm); margin-bottom: 8px; }
+.profile-card { display: flex; align-items: center; gap: 16px; padding: 14px; background: linear-gradient(135deg, rgba(21, 28, 37, .96), rgba(23, 52, 47, .78)); border: 1px solid var(--line); border-radius: 16px; transition: transform .2s, border-color .2s, background .2s; }
+.profile-card:hover { transform: translateY(-3px); border-color: var(--accent-strong); background: linear-gradient(135deg, rgba(25, 35, 45, .98), rgba(27, 67, 58, .9)); }
+.profile-card img { width: 72px; height: 72px; flex: 0 0 72px; object-fit: cover; border: 2px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 5px rgba(133, 224, 192, .08); }
+.profile-copy { display: grid; gap: 4px; }
+.profile-kicker { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .16em; }
+.profile-copy strong { font-size: 18px; }
+.profile-copy > span:last-child { color: var(--muted); font-size: 13px; }
 .section-heading { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 20px; }
 h2 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
 .section-heading span { color: var(--muted); font-size: 13px; }
