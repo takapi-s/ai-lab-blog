@@ -1,59 +1,85 @@
 direction: right
+style.fill: "#0d1117"
+style.font-color: "#edf2f7"
 
-user: 利用者ブラウザ {
-  style.fill: "#12304a"
-  style.stroke: "#38bdf8"
-  style.font-color: "#ffffff"
+user: User {
+  style.fill: "#151c25"
+  style.stroke: "#f2c078"
+  style.font-color: "#edf2f7"
 }
 
-repo: GitHub リポジトリ {
-  style.fill: "#332348"
-  style.stroke: "#c084fc"
+hermes: Hermes Agent {
+  style.fill: "#17342f"
+  style.stroke: "#85e0c0"
+  style.font-color: "#edf2f7"
+  runtime: "miniPC / local"
+  role: "Drafts, PR support"
+}
+
+repo: GitHub Repository {
+  style.fill: "#211c32"
+  style.stroke: "#c4a7ff"
+  style.font-color: "#edf2f7"
   notes: "src/content/notes/*.md(x)"
+  diagrams: "docs/diagrams/*.d2"
 }
 
 build: Astro 7 {
-  style.fill: "#123b35"
-  style.stroke: "#34d399"
+  style.fill: "#15332d"
+  style.stroke: "#85e0c0"
+  style.font-color: "#edf2f7"
   typescript: TypeScript
-  content: MDX + React components
+  content: "MDX + React components"
 }
 
 ci: GitHub Actions {
-  style.fill: "#26204a"
-  style.stroke: "#a78bfa"
+  style.fill: "#211c32"
+  style.stroke: "#c4a7ff"
+  style.font-color: "#edf2f7"
   trigger: "pull_request / push main"
 }
 
-preview: PR Preview 経路 {
-  style.fill: "#4a2435"
-  style.stroke: "#fb7185"
+preview: PR Preview Path {
+  style.fill: "#35242b"
+  style.stroke: "#f29aaa"
+  style.font-color: "#edf2f7"
   build: Astro build
   deploy: Wrangler
   worker: "Cloudflare Workers Static Assets"
   name: "ai-lab-blog-pr-<PR number>"
 }
 
-production: main Production 経路 {
-  style.fill: "#4b321c"
-  style.stroke: "#fbbf24"
+production: Main Production Path {
+  style.fill: "#352c20"
+  style.stroke: "#f2c078"
+  style.font-color: "#edf2f7"
   build: Astro build
   deploy: Wrangler
   worker: "Cloudflare Workers Static Assets"
   name: "ai-lab-blog"
 }
 
-repo.notes -> build: "記事編集"
-repo -> ci: "PR / push"
+browser: End User Browser {
+  style.fill: "#152936"
+  style.stroke: "#7dd3fc"
+  style.font-color: "#edf2f7"
+}
+
+user -> hermes: "writing instruction"
+hermes -> repo.notes: "article draft"
+hermes -> ci: "create / review PR"
+repo -> build: "change"
 build -> ci: "build"
 ci -> preview: "pull_request"
 ci -> production: "push main"
-preview -> user: "preview URL"
-production -> user: "production URL"
+preview -> browser: "preview URL"
+production -> browser: "production URL"
 
-legend: 凡例 {
-  style.fill: "#111c2e"
-  style.stroke: "#475569"
-  solid: "実線：処理・配信"
-  trigger: "破線：トリガー・編集"
+legend: Legend {
+  style.fill: "#151c25"
+  style.stroke: "#263241"
+  style.font-color: "#96a3b3"
+  hermes_key: "green: Hermes Agent"
+  accent_key: "mint: site / automation"
+  flow_key: "solid: process / delivery"
 }

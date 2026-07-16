@@ -42,7 +42,7 @@ Cloudflare Workers Preview
 
 ## 技術スタック構成図
 
-Draw.io MCPで作成した初期図をもとに、現在はD2で管理している構成図です。D2から生成したSVGを表示しています。
+Draw.io MCPで作成した初期図をもとに、現在はD2で管理している構成図です。記事の下書きとPull Request作成を担当するHermes Agent（miniPC上）が、GitHub ActionsとAstro/Cloudflare Workersの公開フローに接続されています。D2から生成したSVGを表示しています。
 
 ![ai-lab-blogのAstro・Cloudflare Workers構成図](/images/ai-lab-blog-architecture-d2.svg)
 
