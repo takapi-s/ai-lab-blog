@@ -46,11 +46,17 @@ h1 { max-width: 720px; margin: 16px 0 20px; font-size: clamp(42px, 7vw, 78px); l
 .gear-item { display: grid; grid-template-columns: 72px 1fr; gap: 22px; padding: 26px 0; border-bottom: 1px solid var(--line); }
 .gear-index { color: var(--accent); font-size: 13px; font-variant-numeric: tabular-nums; }
 .gear-category { color: var(--warm); font-size: 11px; font-weight: 700; letter-spacing: .16em; }
-.gear-body h2 { margin: 8px 0; font-size: 25px; }
+.gear-body h2 { margin: 8px 0 4px; font-size: 25px; }
+.gear-specs { margin-bottom: 10px; color: var(--accent); font-size: 13px; }
 .gear-body p { margin: 0 0 12px; color: var(--muted); line-height: 1.7; }
 .gear-note { display: inline-block; padding: 5px 9px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 5px; font-size: 12px; }
+.gear-link { display: inline-block; margin-left: 10px; color: var(--accent); font-size: 13px; font-weight: 700; }
+.gear-link:hover { color: var(--text); }
 .page-note { margin-top: 30px; padding: 18px 20px; color: var(--muted); background: var(--panel-soft); border: 1px solid var(--line); border-radius: 12px; line-height: 1.7; }
 .page-note strong { display: block; margin-bottom: 6px; color: var(--warm); }
+.prose-page { max-width: 760px; }
+.prose-page h2 { margin: 48px 0 14px; font-size: 28px; }
+.prose-page p { max-width: 680px; color: #d7dee7; font-size: 17px; line-height: 1.9; }
 .contact-page { max-width: 760px; }
 .contact-card { display: flex; justify-content: space-between; gap: 28px; align-items: end; margin-top: 30px; padding: 24px; background: linear-gradient(145deg, var(--panel), var(--panel-soft)); border: 1px solid var(--line); border-radius: 16px; }
 .contact-card h2 { margin: 4px 0 10px; font-size: 24px; }

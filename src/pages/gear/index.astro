@@ -3,22 +3,35 @@ import "../../styles/global.css";
 
 const gear = [
   {
-    category: "COMPUTE",
-    name: "Local miniPC",
-    purpose: "Hermes Agentを常駐させるローカル実行環境",
-    note: "モデル・メモリ・消費電力を検証中"
+    category: "DESKTOP",
+    name: "HP OMEN 40L",
+    specs: "Intel Core i7-12700K / GeForce RTX 3070 Ti / 32GB RAM",
+    purpose: "サイト開発、AI実験、画像処理に使っているメインPC",
+    note: "BTO構成・少し古い世代だが現在も使用中"
   },
   {
-    category: "STORAGE",
-    name: "SSD / backup storage",
-    purpose: "Agentの設定、ログ、生成物を保存するためのストレージ",
-    note: "容量とバックアップ構成を記録予定"
+    category: "MINI PC",
+    name: "GMKtec M6 Ultra",
+    specs: "AMD Ryzen 7 7640HS / 128GB RAM / 8TB SSD",
+    purpose: "ローカルでAI Agentを常駐させるための小型実行環境",
+    note: "Hermes Agent用として検証中",
+    amazonUrl: "https://www.amazon.co.jp/dp/B0GD6SBH7B"
   },
   {
-    category: "WORKFLOW",
-    name: "GitHub + Cloudflare Workers",
-    purpose: "記事の公開、PR Preview、本番デプロイ",
-    note: "このサイトの公開基盤として使用中"
+    category: "KEYBOARD",
+    name: "ZENAIM KEYBOARD2 mini",
+    specs: "60%サイズ / 日本語配列 / ラピッドトリガー",
+    purpose: "日常の入力と長時間の開発作業",
+    note: "使用感を記録予定",
+    amazonUrl: "https://www.amazon.co.jp/dp/B0FJG8VKGK"
+  },
+  {
+    category: "MOUSE",
+    name: "Logicool MXTB2d MX ERGO S",
+    specs: "静音ワイヤレス・トラックボール / Bluetooth・Logi Bolt",
+    purpose: "デスク上のポインティングデバイス",
+    note: "使用感を記録予定",
+    amazonUrl: "https://www.amazon.co.jp/dp/B0D9Y1SNQT"
   }
 ];
 ---
@@ -41,6 +54,7 @@ const gear = [
           <a href="/#notes">Notes</a>
           <a href="/gear/">Gear</a>
           <a href="/contact/">Contact</a>
+          <a href="/about/">About</a>
         </nav>
       </header>
 
@@ -51,14 +65,16 @@ const gear = [
         <p class="page-lead">AI AgentとminiPCの実験、自動化、サイト運営で実際に使っている機材とサービスを記録します。スペックだけでなく、何に使い、どうだったかを残します。</p>
 
         <section class="gear-list" aria-label="使用機材とサービス">
-          {gear.map((item) => (
+          {gear.map((item, index) => (
             <article class="gear-item">
-              <div class="gear-index">{String(gear.indexOf(item) + 1).padStart(2, "0")}</div>
+              <div class="gear-index">{String(index + 1).padStart(2, "0")}</div>
               <div class="gear-body">
                 <div class="gear-category">{item.category}</div>
                 <h2>{item.name}</h2>
+                <div class="gear-specs">{item.specs}</div>
                 <p>{item.purpose}</p>
                 <span class="gear-note">{item.note}</span>
+                {item.amazonUrl && <a class="gear-link" href={item.amazonUrl} target="_blank" rel="noopener noreferrer">Amazon商品ページ ↗</a>}
               </div>
             </article>
           ))}
@@ -66,7 +82,7 @@ const gear = [
 
         <aside class="page-note">
           <strong>Disclosure</strong>
-          現在は紹介料を受け取るリンクを掲載していません。将来、購入先や紹介リンクを掲載する場合は、記事内で明示します。
+          現在はアフィリエイトIDを付けていない通常の商品ページへのリンクです。将来、紹介料を受け取るリンクを掲載する場合は、記事内で明示します。
         </aside>
       </main>
 
