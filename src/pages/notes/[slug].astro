@@ -42,6 +42,18 @@ const { Content } = await render(note);
         </div>
         <h1>{note.data.title}</h1>
         <p class="article-lead">{note.data.description}</p>
+        <section class="experiment-panel" aria-label="実験概要">
+          <div>
+            <span class="panel-label">STATUS</span>
+            <strong>{note.data.status}</strong>
+          </div>
+          <div class="stack-list">
+            <span class="panel-label">STACK</span>
+            <div>
+              {note.data.stack.map((item) => <span class="stack-chip">{item}</span>)}
+            </div>
+          </div>
+        </section>
         <article class="article-content">
           <Content />
         </article>
@@ -58,6 +70,10 @@ const { Content } = await render(note);
   .article-meta time { color: var(--muted); }
   .article-shell h1 { max-width: none; margin: 18px 0; font-size: clamp(38px, 6vw, 64px); }
   .article-lead { color: var(--muted); font-size: 18px; line-height: 1.8; }
+  .experiment-panel { display: grid; grid-template-columns: 150px 1fr; gap: 22px; margin-top: 34px; padding: 18px; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 12px; }
+  .panel-label { display: block; margin-bottom: 8px; color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .14em; }
+  .experiment-panel strong { font-size: 14px; }
+  .stack-chip { display: inline-block; margin: 0 6px 6px 0; padding: 5px 8px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 5px; font-size: 12px; }
   .article-content { margin-top: 54px; color: #d7dee7; font-size: 17px; line-height: 1.9; }
   .article-content :global(h2) { margin: 48px 0 14px; color: var(--text); font-size: 28px; }
   .article-content :global(p) { margin: 18px 0; }
