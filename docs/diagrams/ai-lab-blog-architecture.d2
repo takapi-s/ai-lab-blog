@@ -1,4 +1,4 @@
-direction: right
+direction: down
 style.fill: "#0d1117"
 style.font-color: "#edf2f7"
 
@@ -8,20 +8,36 @@ user: User {
   style.font-color: "#edf2f7"
 }
 
-hermes: Hermes Agent {
-  style.fill: "#17342f"
-  style.stroke: "#85e0c0"
+miniPC: Local miniPC {
+  style.fill: "#111c1b"
+  style.stroke: "#45c99b"
   style.font-color: "#edf2f7"
-  runtime: "miniPC / local"
-  role: "Drafts, PR support"
+  hermes: Hermes Agent {
+    style.fill: "#17342f"
+    style.stroke: "#85e0c0"
+    style.font-color: "#edf2f7"
+    runtime: "local automation"
+    role: "drafts + PR support"
+  }
 }
 
-repo: GitHub Repository {
-  style.fill: "#211c32"
+github: GitHub {
+  style.fill: "#171525"
   style.stroke: "#c4a7ff"
   style.font-color: "#edf2f7"
-  notes: "src/content/notes/*.md(x)"
-  diagrams: "docs/diagrams/*.d2"
+  repo: Repository {
+    style.fill: "#211c32"
+    style.stroke: "#c4a7ff"
+    style.font-color: "#edf2f7"
+    notes: "src/content/notes/*.md(x)"
+    diagrams: "docs/diagrams/*.d2"
+  }
+  actions: Actions {
+    style.fill: "#211c32"
+    style.stroke: "#c4a7ff"
+    style.font-color: "#edf2f7"
+    trigger: "pull_request / push main"
+  }
 }
 
 build: Astro 7 {
@@ -32,30 +48,23 @@ build: Astro 7 {
   content: "MDX + React components"
 }
 
-ci: GitHub Actions {
-  style.fill: "#211c32"
-  style.stroke: "#c4a7ff"
-  style.font-color: "#edf2f7"
-  trigger: "pull_request / push main"
-}
-
-preview: PR Preview Path {
+preview: PR Preview {
   style.fill: "#35242b"
   style.stroke: "#f29aaa"
   style.font-color: "#edf2f7"
   build: Astro build
   deploy: Wrangler
-  worker: "Cloudflare Workers Static Assets"
+  target: "Cloudflare Workers Static Assets"
   name: "ai-lab-blog-pr-<PR number>"
 }
 
-production: Main Production Path {
+production: Main Production {
   style.fill: "#352c20"
   style.stroke: "#f2c078"
   style.font-color: "#edf2f7"
   build: Astro build
   deploy: Wrangler
-  worker: "Cloudflare Workers Static Assets"
+  target: "Cloudflare Workers Static Assets"
   name: "ai-lab-blog"
 }
 
@@ -65,21 +74,12 @@ browser: End User Browser {
   style.font-color: "#edf2f7"
 }
 
-user -> hermes: "writing instruction"
-hermes -> repo.notes: "article draft"
-hermes -> ci: "create / review PR"
-repo -> build: "change"
-build -> ci: "build"
-ci -> preview: "pull_request"
-ci -> production: "push main"
+user -> miniPC.hermes: "writing instruction"
+miniPC.hermes -> github.repo.notes: "article draft"
+miniPC.hermes -> github.actions: "create / review PR"
+github.repo -> build: "change"
+build -> github.actions: "build"
+github.actions -> preview: "pull_request"
+github.actions -> production: "push main"
 preview -> browser: "preview URL"
 production -> browser: "production URL"
-
-legend: Legend {
-  style.fill: "#151c25"
-  style.stroke: "#263241"
-  style.font-color: "#96a3b3"
-  hermes_key: "green: Hermes Agent"
-  accent_key: "mint: site / automation"
-  flow_key: "solid: process / delivery"
-}

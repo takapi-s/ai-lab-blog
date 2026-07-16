@@ -42,10 +42,10 @@ Cloudflare Workers Preview
 
 ## 技術スタック構成図
 
-Draw.io MCPで作成した初期図をもとに、現在はD2で管理している構成図です。記事の下書きとPull Request作成を担当するHermes Agent（miniPC上）が、GitHub ActionsとAstro/Cloudflare Workersの公開フローに接続されています。D2から生成したSVGを表示しています。
+現在はD2で管理している構成図です。Hermes AgentはローカルminiPCの中で動作し、記事の下書きとPull Request作成を担当します。GitHubのRepositoryとActionsを経由して、AstroとCloudflare Workersへ公開します。D2から生成したSVGを表示しています。
 
 ![ai-lab-blogのAstro・Cloudflare Workers構成図](/images/ai-lab-blog-architecture-d2.svg)
 
-編集可能なD2ソースは[`docs/diagrams/ai-lab-blog-architecture.d2`](https://github.com/takapi-s/ai-lab-blog/blob/main/docs/diagrams/ai-lab-blog-architecture.d2)、初期のDraw.ioファイルは[`docs/ai-lab-blog-architecture.drawio`](https://github.com/takapi-s/ai-lab-blog/blob/main/docs/ai-lab-blog-architecture.drawio)から確認できます。
+編集可能なD2ソースは[`docs/diagrams/ai-lab-blog-architecture.d2`](https://github.com/takapi-s/ai-lab-blog/blob/main/docs/diagrams/ai-lab-blog-architecture.d2)から確認できます。
 
 記事の下書きは、今後miniPC上のHermes Agentから作成し、Pull Requestを確認ゲートとして公開する予定です。
