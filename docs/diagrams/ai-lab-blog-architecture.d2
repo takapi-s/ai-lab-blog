@@ -1,0 +1,59 @@
+direction: right
+
+user: 利用者ブラウザ {
+  style.fill: "#12304a"
+  style.stroke: "#38bdf8"
+  style.font-color: "#ffffff"
+}
+
+repo: GitHub リポジトリ {
+  style.fill: "#332348"
+  style.stroke: "#c084fc"
+  notes: "src/content/notes/*.md(x)"
+}
+
+build: Astro 7 {
+  style.fill: "#123b35"
+  style.stroke: "#34d399"
+  typescript: TypeScript
+  content: MDX + React components
+}
+
+ci: GitHub Actions {
+  style.fill: "#26204a"
+  style.stroke: "#a78bfa"
+  trigger: "pull_request / push main"
+}
+
+preview: PR Preview 経路 {
+  style.fill: "#4a2435"
+  style.stroke: "#fb7185"
+  build: Astro build
+  deploy: Wrangler
+  worker: "Cloudflare Workers Static Assets"
+  name: "ai-lab-blog-pr-<PR number>"
+}
+
+production: main Production 経路 {
+  style.fill: "#4b321c"
+  style.stroke: "#fbbf24"
+  build: Astro build
+  deploy: Wrangler
+  worker: "Cloudflare Workers Static Assets"
+  name: "ai-lab-blog"
+}
+
+repo.notes -> build: "記事編集"
+repo -> ci: "PR / push"
+build -> ci: "build"
+ci -> preview: "pull_request"
+ci -> production: "push main"
+preview -> user: "preview URL"
+production -> user: "production URL"
+
+legend: 凡例 {
+  style.fill: "#111c2e"
+  style.stroke: "#475569"
+  solid: "実線：処理・配信"
+  trigger: "破線：トリガー・編集"
+}
