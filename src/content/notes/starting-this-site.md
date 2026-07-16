@@ -40,4 +40,12 @@ Cloudflare Workers Preview
 本番Worker
 ```
 
+## 技術スタック構成図
+
+Draw.io MCPで作成した構成図です。PR Previewと本番Workerへのデプロイ経路を確認できます。
+
+![ai-lab-blogのAstro・Cloudflare Workers構成図](/images/ai-lab-blog-architecture.png)
+
+編集可能なDraw.ioファイルは、リポジトリの[`docs/ai-lab-blog-architecture.drawio`](https://github.com/takapi-s/ai-lab-blog/blob/main/docs/ai-lab-blog-architecture.drawio)から確認できます。
+
 記事の下書きは、今後miniPC上のHermes Agentから作成し、Pull Requestを確認ゲートとして公開する予定です。
