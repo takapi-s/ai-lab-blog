@@ -30,6 +30,8 @@ const { Content } = await render(note);
         </a>
         <nav class="nav" aria-label="メインナビゲーション">
           <a href="/#notes">Notes</a>
+          <a href="/gear/">Gear</a>
+          <a href="/contact/">Contact</a>
           <a href="/#about">About</a>
         </nav>
       </header>
@@ -78,6 +80,7 @@ const { Content } = await render(note);
   .article-content :global(h2) { margin: 48px 0 14px; color: var(--text); font-size: 28px; }
   .article-content :global(p) { margin: 18px 0; }
   .article-content :global(li) { margin: 8px 0; }
+  .article-content :global(img) { display: block; width: 100%; max-width: 100%; height: auto; margin: 24px 0; border: 1px solid var(--line); border-radius: 12px; }
   .article-content :global(pre) { overflow-x: auto; margin: 24px 0; padding: 20px; background: #080c11; border: 1px solid var(--line); border-radius: 12px; font-size: 14px; line-height: 1.6; }
   .article-content :global(code) { font-family: "SFMono-Regular", Consolas, monospace; }
 </style>
