@@ -1,5 +1,18 @@
 ---
+import { getCollection } from "astro:content";
 import "../styles/global.css";
+
+const showDrafts = import.meta.env.SHOW_DRAFTS === "true";
+const noteEntries = await getCollection("notes", ({ data }) => showDrafts || !data.draft);
+const notes = noteEntries
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5)
+  .map((note) => ({
+    date: note.data.pubDate.toISOString().slice(0, 10).replaceAll("-", "."),
+    title: note.data.title,
+    tag: note.data.category,
+    href: `/notes/${note.id}/`,
+  }));
 
 const topics = [
   {
@@ -17,12 +30,6 @@ const topics = [
     title: "コードは動くところまで書く",
     text: "GitHubの紹介だけでなく、実装・検証・判断の過程をオープンにする。"
   }
-];
-
-const notes = [
-  { date: "2026.07.15", title: "このサイトをAstroとCloudflare Workersで始める", tag: "BUILD LOG", href: "/notes/starting-this-site/" },
-  { date: "COMING SOON", title: "miniPCにAIエージェントを常駐させる構成", tag: "AI / AGENTS", href: "#" },
-  { date: "COMING SOON", title: "実際に使って分かった道具のレビュー", tag: "HARDWARE", href: "#" }
 ];
 ---
 
