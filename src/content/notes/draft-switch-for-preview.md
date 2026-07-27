@@ -1,227 +1,217 @@
 ---
-title: "AIに記事を書かせても、自動公開しない仕組みにした理由"
-description: "Field Notesでは、AIに記事の下書きを作らせても、そのまま本番公開しません。GitHub PRとCloudflare Previewを使い、人間が内容と見た目を確認してから公開する運用を実装しました。"
+title: "Latest notesが更新されなかった原因を、手書き一覧からContent Collectionへ直した"
+description: "記事ファイルを追加してもトップページのLatest notesが変わらない問題を、AstroのContent Collectionから日付順に自動生成する構成へ修正しました。"
 pubDate: 2026-07-27
-category: "AI / AGENTS"
+category: "BUILD LOG"
 tags:
-  - AI Agent
-  - GitHub Pull Request
-  - Cloudflare Workers
+  - Astro
+  - Content Collections
+  - MDX
   - ブログ運用
   - 自動化
 status: "検証済み"
 stack:
   - Astro 7
-  - GitHub Actions
-  - Cloudflare Workers Static Assets
-  - Wrangler
+  - TypeScript
+  - Astro Content Collections
+  - Markdown / MDX
 draft: true
 ---
 
-## この記事で分かること
+## 起きていた問題
 
-AIを使ってブログ記事を定期的に作りたいとき、最も危険なのは「記事を書けること」ではなく、**間違った内容や未確認の情報を、そのまま公開してしまうこと**です。
+記事を`src/content/notes/`に追加しても、トップページの`Latest notes`が更新されませんでした。
 
-Field Notesでは、次の運用にしています。
+新しい記事ファイル自体は存在していましたが、トップページの一覧が次のような固定配列になっていたためです。
 
-```text
-AIが記事の下書きを作る
-        ↓
-GitHubにPull Requestを作る
-        ↓
-Cloudflare Previewで実際の表示を確認する
-        ↓
-人間が内容・リンク・見た目をレビューする
-        ↓
-承認後にmainへマージする
-        ↓
-本番サイトへ自動デプロイする
+```astro
+const notes = [
+  { title: "最初の記事", href: "/notes/starting-this-site/" },
+  { title: "COMING SOON", href: "#" },
+];
 ```
 
-AIには「作成」と「検証の補助」を任せますが、公開の判断は人間に残します。
+この構成では、記事を追加するたびにトップページのコードも手で修正する必要があります。記事作成をCronやAIで自動化するなら、このままでは更新漏れが起きます。
 
-## なぜ自動公開しないのか
+## 修正後の構成
 
-AIで記事を作るだけなら、ローカルファイルを生成して、そのまま本番へデプロイできます。しかし、実際のブログ運用では次の問題が起きます。
+トップページでAstroのContent Collectionを読み込み、公開可能な記事だけを日付順に並べるようにしました。
 
-- AIが実際には使っていない製品を、使ったように書く
-- 価格や仕様が古くなる
-- 外部記事の内容を誤って要約する
-- コード例が動かない
-- 個人情報や秘密情報を記事に混ぜる
-- 下書きや未完成の記事が検索対象になる
-- PCでは問題なくても、スマートフォンでレイアウトが崩れる
+```ts
+const showDrafts = import.meta.env.SHOW_DRAFTS === "true";
+const noteEntries = await getCollection(
+  "notes",
+  ({ data }) => showDrafts || !data.draft,
+);
 
-特にこのサイトでは、miniPC、Hermes Agent、Gmail、Slack、自動化、購入した機材を扱います。実際に確認していないことを体験談として公開すると、記事の信頼性を失います。
-
-そのため、記事の作成を自動化しても、公開までを完全自動化しない設計にしました。
-
-## 実際の構成
-
-ブログはAstroで構築し、記事は`src/content/notes/`にMarkdownまたはMDXで保存します。
-
-```text
-週次Cron
-  ├─ リポジトリと既存記事を確認
-  ├─ 必要な一次情報を調査
-  ├─ 記事を作成
-  ├─ draft: trueで保存
-  ├─ weekly/article-YYYYMMDDブランチを作成
-  ├─ GitHubへpush
-  └─ Pull Requestを作成
-          ↓
-GitHub Actions
-  ├─ npm ci
-  ├─ npm run build
-  ├─ PR用Workerへデプロイ
-  └─ PRへPreview URLをコメント
-          ↓
-人間のレビュー
-          ↓
-mainへマージ
-          ↓
-本番Workerへデプロイ
+const notes = noteEntries
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5)
+  .map((note) => ({
+    date: note.data.pubDate.toISOString().slice(0, 10),
+    title: note.data.title,
+    tag: note.data.category,
+    href: `/notes/${note.id}/`,
+  }));
 ```
 
-PreviewはPR番号ごとに別Workerを作ります。
+これで、記事を追加すると次の情報が自動的に一覧へ反映されます。
 
-```text
-PR #4
-  → https://ai-lab-blog-pr-4.pocky1111gm.workers.dev
-```
+- Frontmatterのタイトル
+- 公開日
+- カテゴリ
+- 記事のslug
+- 公開状態
 
-PRを更新すると同じPreview URLが更新され、PRを閉じるとPreview Workerを削除します。
+## 下書きの扱い
 
-## 下書きはPreviewだけで表示する
-
-記事にはFrontmatterで公開状態を持たせています。
+今回の修正では、通常ビルドとPR Previewで表示する記事を分けています。
 
 ```yaml
 draft: true
 ```
 
-本番ビルドでは、この値が`true`の記事を一覧から除外します。一方、PR Previewのビルドだけは`SHOW_DRAFTS=true`を設定し、レビュー対象の記事を表示します。
-
-この違いによって、次の状態を作れます。
+通常ビルドでは、`draft: true`の記事を除外します。PR Previewでは`SHOW_DRAFTS=true`を設定するため、レビュー対象の下書きも一覧に表示できます。
 
 ```text
-本番サイト:
-  公開済み記事だけ表示
+通常ビルド:
+  公開済み記事だけ
 
 PR Preview:
-  公開済み記事 + 今回レビューする下書き
+  公開済み記事 + レビュー中の記事
 ```
 
-ただし、Preview URLを知っている人が見られる可能性は残ります。下書きだから秘密情報を書いてよい、という意味ではありません。個人情報、APIキー、購入前の未公開レビュー、メール本文などは、Previewにも入れない方針です。
+この判定をトップページだけでなく、記事詳細ページにも適用しています。記事一覧から隠しただけで、URLを直接入力すると下書きが見える状態にならないようにするためです。
 
-## レビューで確認すること
+## なぜ固定配列で始めたのか
 
-PRでは、文章だけでなく、次の項目を確認します。
+最初のサイトでは、まず画面の雰囲気を確認することを優先しました。記事が1本だけの段階では、固定配列でも表示確認はできます。
 
-### 内容
+しかし、記事を週次で追加する運用に切り替えると、固定配列には次の問題があります。
 
-- 実際に確認したことと推測が分かれているか
-- 体験談が本当に自分の経験に基づいているか
-- 製品の価格・仕様が最新か
-- 外部記事の要約が正確か
-- 読者にとって何が役に立つ記事か
+- 新しい記事を追加しても一覧が変わらない
+- 日付順に並ばない
+- 記事URLの手入力が必要になる
+- 下書きの表示条件を統一できない
+- AIが記事を作っても、別のファイルを更新し忘れる
 
-### 実装
+つまり、試作段階では便利でも、記事を増やす段階ではデータと表示が分離してしまいます。
 
-- コード例が実際に動くか
-- コマンドに秘密情報が含まれていないか
-- 参照リンクが正しいか
-- 本番設定とPreview設定を取り違えていないか
+## 実際に行った検証
 
-### 表示
+今回の修正では、通常ビルドとPreview相当ビルドを分けて確認しました。
 
-- スマートフォンで読みやすいか
-- 見出しの順番が自然か
-- 記事一覧から正しいページへ移動できるか
-- 画像や図の文字が切れていないか
-- 未完成の記事が本番一覧に出ていないか
+### 通常ビルド
 
-## この仕組みが役立つ人
+```bash
+npm run build
+```
 
-この構成は、次のような人に向いています。
+確認したこと：
 
-- AIにブログ記事の下書きを作らせたい人
-- 技術ブログをGitHubで管理している人
-- AIの誤情報をそのまま公開したくない人
-- PRごとに実サイトを確認したい人
-- 複数人で記事をレビューしたい人
-- 商品レビューや導入事例で事実確認を重視する人
+- Astroのビルドが成功する
+- 公開済み記事は一覧に表示される
+- `draft: true`の記事は一覧に表示されない
+- 公開済み記事のリンクが生成される
 
-広告やアフィリエイトだけを目的にすると、AIで大量の記事を作る方向へ流れやすくなります。しかし、読者が信頼するのは記事数ではなく、実際の検証結果と判断材料です。
+### Preview相当ビルド
 
-この仕組みは、将来的にAI業務自動化の導入支援や、miniPC・Linux環境の構築支援へつなげる場合にも役立ちます。記事そのものが、実装力と検証方法を示すポートフォリオになるからです。
+```bash
+SHOW_DRAFTS=true npm run build
+```
 
-## 検証結果
+確認したこと：
 
-今回のPRでは、次のことを実測しました。
+- 下書き記事のページが生成される
+- 下書き記事がLatest notesに表示される
+- 下書き記事へのリンクが正しい
+- 記事詳細ページが生成される
 
-- 通常のAstroビルドが成功する
-- Previewビルドで下書き記事が生成される
-- 通常ビルドでは下書き記事がLatest notesに表示されない
-- Previewビルドでは下書き記事がLatest notesに表示される
-- GitHub ActionsからPR用Cloudflare Workerへデプロイできる
-- PRにPreview URLが自動コメントされる
-- Previewの記事ページがHTTP 200で表示される
+実際のPreviewでも、今回の記事のタイトルとリンクが表示されることを確認しました。
 
-Preview URLは次です。
+## 既存記事との違い
 
-https://ai-lab-blog-pr-4.pocky1111gm.workers.dev
+このサイトには、すでに次の関連記事があります。
 
-記事ページは次です。
+- 「このサイトをAstroとCloudflare Workersで始める」
+  - サイト全体の目的と技術構成を説明
+- 「公開前にCloudflare WorkersのPR Previewを置いた理由」
+  - PR Previewと公開前レビューの仕組みを説明
 
-https://ai-lab-blog-pr-4.pocky1111gm.workers.dev/notes/draft-switch-for-preview/
+今回の記事は、それらの再説明ではありません。
+
+今回の焦点は、**記事を追加した後にトップページの一覧をどう自動更新するか**です。
+
+```text
+既存記事:
+  サイト構成・PR Preview・公開レビュー
+
+今回の記事:
+  Content Collectionを使った記事一覧の自動生成
+```
+
+同じブログ基盤を扱っていますが、解決している問題が異なります。
+
+## この修正で変わる運用
+
+今後は記事を追加するとき、トップページを別に編集する必要がありません。
+
+```text
+記事ファイルを追加
+  ↓
+Frontmatterを設定
+  ↓
+ビルド
+  ↓
+Latest notesへ自動反映
+```
+
+週次Cronが記事を作成してPRを作る場合も、記事ファイルだけを追加すれば一覧に反映されます。記事の追加とトップページの更新を別々に行わなくてよくなるため、更新漏れを減らせます。
 
 ## 残っている課題
 
-この仕組みだけで、AI記事の品質が自動的に保証されるわけではありません。
+まだ次の改善は残っています。
 
-- AIが選んだテーマが読者に必要か判断する
-- 実体験と外部情報を区別する
-- 商品情報や価格を再確認する
-- 記事の主張が強すぎないか確認する
-- Previewをスマートフォンでも確認する
-- 公開後にリンク切れや古い情報を確認する
+- カテゴリ別の記事一覧
+- タグ別の記事一覧
+- ページネーション
+- RSSフィード
+- サイトマップへの下書き除外
+- 関連記事の自動表示
+- 記事の読了時間
+- 検索インデックスへの公開条件の統一
 
-AIは調査・下書き・整理を速くできますが、公開に値するかどうかの判断は別の作業です。
+特にRSS、sitemap、検索機能を追加するときは、トップページと同じ公開条件を使う必要があります。一覧だけ正しくても、RSSに下書きが出れば公開境界が崩れるためです。
 
 ## まとめ
 
-今回作ったのは、AIに完全自動で記事を公開させる仕組みではありません。
+今回の問題は、記事の作成処理ではなく、**記事データとトップページ表示が別々に管理されていたこと**が原因でした。
+
+固定配列からContent Collectionへ変更したことで、現在は次の構成になっています。
 
 ```text
-AI:
-  調査、下書き、整理、検証候補の提示
-
-人間:
-  事実確認、内容の修正、公開判断
-
-GitHub PR:
-  変更履歴とレビューの場所
-
-Cloudflare Preview:
-  公開前に実サイトを見る場所
+Markdown / MDX記事
+  ↓
+Astro Content Collection
+  ↓
+公開状態でフィルタ
+  ↓
+公開日でソート
+  ↓
+Latest notesを自動生成
 ```
 
-この分担なら、記事作成の負担を減らしながら、実体験ではない内容や未確認の情報がそのまま公開されるリスクを下げられます。
-
-技術ブログを収益化する場合も、最初に増やすべきなのは記事数ではなく、読者が「この人の検証なら参考になる」と判断できる記録です。
+この修正は派手ではありませんが、週次記事作成やPRレビューを続けるための重要な土台です。記事を増やすほど、手書きの一覧ではなく、記事データから表示を生成する構成の価値が大きくなります。
 
 ## 出典
 
 ### このリポジトリで確認した事実
 
-- [`src/content.config.ts`](https://github.com/takapi-s/ai-lab-blog/blob/main/src/content.config.ts): 記事のFrontmatterスキーマ
+- [`src/content.config.ts`](https://github.com/takapi-s/ai-lab-blog/blob/main/src/content.config.ts): `notes` Content Collectionの定義
 - [`src/pages/index.astro`](https://github.com/takapi-s/ai-lab-blog/blob/main/src/pages/index.astro): Content CollectionからLatest notesを生成する処理
-- [`.github/workflows/cloudflare.yml`](https://github.com/takapi-s/ai-lab-blog/blob/main/.github/workflows/cloudflare.yml): PR Previewとmainデプロイ
-- [`wrangler.jsonc`](https://github.com/takapi-s/ai-lab-blog/blob/main/wrangler.jsonc): Cloudflare Workers Static Assets設定
+- [`src/pages/notes/[slug].astro`](https://github.com/takapi-s/ai-lab-blog/blob/main/src/pages/notes/%5Bslug%5D.astro): 記事詳細ページの生成条件
 
 ### 仕様確認
 
 - [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
-- [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
-- [GitHub Actions documentation](https://docs.github.com/en/actions)
+- [Astro Content Loader Reference](https://docs.astro.build/en/reference/content-loader-reference/)
